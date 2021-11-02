@@ -33,7 +33,15 @@ app.get('/api/persons',(request,response)=>{
 
 })
 
+app.get('/info',(request,response)=>{
+  //if you want to know the maximum number person
+  const maxPerson = persons.length > 0
+    ? Math.max(...persons.map(n => n.id)):0
+    const dateNow=new Date()
+  
+  response.send(`<p>Phonebook has ${maxPerson}  people</p> <p>  ${dateNow} </p>`)
 
+})
 
 
 const PORT=3004
