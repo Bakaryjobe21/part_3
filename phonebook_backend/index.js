@@ -1,4 +1,4 @@
-const { response } = require('express')
+const { response, request } = require('express')
 const express=require('express')
 const app=express()
 
@@ -59,7 +59,23 @@ app.get('/api/persons/:id',(request,response)=>{
 
 })
 
+app.delete('/api/persons/:id',(request,response)=>{
+  const id = Number(request.params.id)
+  const persons=persons.filter(per=>per.id !==id)
+  response.status(204).end()
+})
 
+//how to add a new person
+app.post('/api/persons', (request,response)=>{
+  const maxPerson=persons.length>0
+  ?Math.max(...persons.map(p=>p.id))
+  :0
+  const pers=request.body
+  pers.id=maxPerson+1
+  persons=persons.concat(pers)
+  response.json(pers)
+
+})
 const PORT=3005
 app.listen(PORT,()=>{
   console.log(`server running on port ${PORT}`)
