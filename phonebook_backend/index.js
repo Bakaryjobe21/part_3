@@ -2,8 +2,20 @@ const { response, request } = require('express')
 const express=require('express')
 const app=express()
 
+const morgan=require('morgan')
 
 
+app.use(morgan('tiny'));
+morgan(':method :url :status :res[content-length] - :response-time ms');
+morgan(function (tokens, req, res) {
+  return [
+    tokens.method(req, res),
+    tokens.url(req, res),
+    tokens.status(req, res),
+    tokens.res(req, res, 'content-length'), '-',
+    tokens['response-time'](req, res), 'ms'
+  ].join(' ')
+})
   let persons=[
     { 
       "id": 1,
@@ -44,7 +56,7 @@ app.get('/info',(request,response)=>{
 })
 
 app.use(express.json())
-
+//getting a single person
 app.get('/api/persons/:id',(request,response)=>{
   const id=Number(request.params.id)
   const person=persons.find(p=>p.id===id)
@@ -76,10 +88,29 @@ app.post('/api/persons', (request,response)=>{
   response.json(pers)
 
 })
+
+//how dectect a name that s alraedy added
+app.post('/api/persons/:id',(request,response)=>{
+  const id=Number(request.params.id)
+  const person=persons.find(p=>p.id===id)
+
+  if(person){
+  
+    response.error('name must unique').end()
+  }
+  else{
+    response.json(person)
+  }
+ 
+
+})
+
+
 const PORT=3005
 app.listen(PORT,()=>{
   console.log(`server running on port ${PORT}`)
 })
+
 
 
 
